@@ -53,6 +53,8 @@ def calcCurrentRenderSize():
     ratio32V = round(2/3, 2)
     ratio43V = round(3/4, 2)
     ratioAV = round(210/297, 2)
+    ratio12O = round(2/1, 2)
+    ratio12V = round(1/2, 2)
     # print(str(ratio))
     if ratio == ratio169:
         ratioStr = "16/9 Orizontal"
@@ -70,10 +72,14 @@ def calcCurrentRenderSize():
         ratioStr = "4/3 Vertical"
     elif ratio == ratioAV:
         ratioStr = "Ax Vertical"
+    elif ratio == ratio12O:
+        ratioStr = "2:1 Orizontal"
+    elif ratio == ratio12V:
+        ratioStr = "2:1 Vertical"
 
     strSizeInfo = str(currentRenderWindowX) + "x" + str(currentRenderWindowY) + " - " + ratioStr       
     # print("Current Render Window Size: " + strSizeInfo)
-    return strSizeInfo
+    return strSizeInfo, currentRenderWindowX, currentRenderWindowY
 
 #################################################################
 # Libs
@@ -107,11 +113,14 @@ class vrManageWS(vrManageWS_form, vrManageWS_base):
         self.sizeGrip.show()
         
         self._SIZUPD_.clicked.connect(self._SIZUPD)
+        self._CUSUPD_.clicked.connect(self._CUSUPD)
+        self._CUSUPD_.clicked.connect(self._SIZUPD)
         
         self._1080O_.clicked.connect(self._1080O)
         self._1080O_.clicked.connect(self._SIZUPD)
         self._1080V_.clicked.connect(self._1080V)
         self._1080V_.clicked.connect(self._SIZUPD)
+        
         self._720O_.clicked.connect(self._720O)
         self._720O_.clicked.connect(self._SIZUPD)
         self._720V_.clicked.connect(self._720V)
@@ -121,18 +130,27 @@ class vrManageWS(vrManageWS_form, vrManageWS_base):
         self._D169O_.clicked.connect(self._SIZUPD)
         self._D169V_.clicked.connect(self._D169V)
         self._D169V_.clicked.connect(self._SIZUPD)
+        
         self._D43O_.clicked.connect(self._D43O)
         self._D43O_.clicked.connect(self._SIZUPD)
         self._D43V_.clicked.connect(self._D43V)
         self._D43V_.clicked.connect(self._SIZUPD)
+        
         self._D32O_.clicked.connect(self._D32O)
         self._D32O_.clicked.connect(self._SIZUPD)
         self._D32V_.clicked.connect(self._D32V)
         self._D32V_.clicked.connect(self._SIZUPD)
+        
+        self._D21O_.clicked.connect(self._D21O)
+        self._D21O_.clicked.connect(self._SIZUPD)
+        self._D21V_.clicked.connect(self._D21V)
+        self._D21V_.clicked.connect(self._SIZUPD)
+        
         self._DAXO_.clicked.connect(self._DAXO)
         self._DAXO_.clicked.connect(self._SIZUPD)
         self._DAXV_.clicked.connect(self._DAXV)
         self._DAXV_.clicked.connect(self._SIZUPD)
+        
         self._D11_.clicked.connect(self._D11)
         self._D11_.clicked.connect(self._SIZUPD)
         
@@ -147,8 +165,21 @@ class vrManageWS(vrManageWS_form, vrManageWS_base):
         self.sizeGrip.raise_()
     
     def _SIZUPD(self):
-        strSizeInfo = calcCurrentRenderSize()
+        strSizeInfo, currentRenderWindowX, currentRenderWindowY = calcCurrentRenderSize()
         self.currentSizeLabel.setProperty("text", strSizeInfo)
+        
+    def _CUSUPD(self):
+        # reset windows size to dynamic
+        SetRenderWindowSizeCustom(0,0)
+        strSizeInfo, currentRenderWindowX, currentRenderWindowY = calcCurrentRenderSize()
+        print(currentRenderWindowX, currentRenderWindowY)
+        sizeX = int(self.Orizontal_Input.text())
+        sizeY = int(self.Vertical_Input.text())
+        print(sizeX, sizeY)
+        if sizeX > currentRenderWindowX or sizeY > currentRenderWindowY or sizeX < 128 or sizeY < 128:
+            SetRenderWindowSizeDynamic(sizeX, sizeY)
+        else:
+            SetRenderWindowSizeCustom(sizeX, sizeY)
     
     #fixed sizes
     def _1080O(self):
@@ -196,6 +227,16 @@ class vrManageWS(vrManageWS_form, vrManageWS_base):
     def _D32V(self):
         ratiox = 2
         ratioy = 3
+        SetRenderWindowSizeDynamic(ratiox, ratioy)
+    
+    def _D21O(self):
+        ratiox = 2
+        ratioy = 1
+        SetRenderWindowSizeDynamic(ratiox, ratioy)
+    
+    def _D21V(self):
+        ratiox = 1
+        ratioy = 2
         SetRenderWindowSizeDynamic(ratiox, ratioy)
     
     def _DAXO(self):
